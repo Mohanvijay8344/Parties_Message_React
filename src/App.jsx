@@ -32,10 +32,10 @@ const processData = (inputData) => {
       currentCompany = line;
       if (!companies[currentCompany]) {
         companies[currentCompany] = {
-          GiPipes: [],
-          GpPipes: [],
-          HrPipes: [],
-          CrfhPipes: [],
+          'GI Pipes': [],
+          'GP Pipes': [],
+          'HR Pipes': [],
+          'Crfh Pipes': [],
           total: ''
         };
       }
@@ -43,16 +43,17 @@ const processData = (inputData) => {
     }
 
     if (line.includes('Pipes') || line.includes('Coil')) {
-      const pipeType = line.toLowerCase().includes('gi pipes') ? 'GiPipes' : 
-                      line.toLowerCase().includes('gp pipes') ? 'GpPipes' :
-                      line.toLowerCase().includes('hr pipes') ? 'HrPipes' : 
-                      line.toLowerCase().includes('crfh pipes') ? 'CrfhPipes' : null;
+      const pipeType = line.toLowerCase().includes('gi pipes') ? 'GI Pipes' : 
+                      line.toLowerCase().includes('gp pipes') ? 'GP Pipes' :
+                      line.toLowerCase().includes('hr pipes') ? 'HR Pipes' : 
+                      line.toLowerCase().includes('crfh pipes') ? 'Crfh Pipes' : null;
       
       if (pipeType && currentCompany) {
         const spec = line
           .replace(/^GI Pipes /i, '')
           .replace(/^GP Pipes /i, '')
           .replace(/^HR Pipes /i, '')
+          .replace(/^Crfh Pipes /i, '')
           .replace(/^CRFH Pipes /i, '');
 
         companies[currentCompany][pipeType].push({
@@ -72,14 +73,15 @@ const CompanyDetails = ({ company, details }) => {
   const getFormattedText = () => {
     let text = `${company}\n\n`;
     
-    ['GiPipes', 'GpPipes', 'HrPipes', 'CrfhPipes'].forEach(pipeType => {
+    ['GI Pipes', 'GP Pipes', 'HR Pipes', 'Crfh Pipes'].forEach(pipeType => {
       if (details[pipeType] && details[pipeType].length > 0) {
-        const title = pipeType.replace(/([A-Z])/g, ' $1').trim();
-        text += `${title} Pipes\n`;
+        const title = pipeType;
+        text += `${title}\n`;
         details[pipeType].forEach(pipe => {
           text += `${pipe.spec} - \n`;
         });
-        text += `\nTotal    - \nFreight-Rs./- Per M.T.\n\n`;
+        text += `\nTotal      - \n\n`;
+        text += `Freight-Rs./- Per M.T.\n\n`;
       }
     });
     
@@ -113,12 +115,12 @@ const CompanyDetails = ({ company, details }) => {
       </div>
       
       <div className="pipe-sections">
-        {['GiPipes', 'GpPipes', 'HrPipes', 'CrfhPipes'].map(pipeType => {
+        {['GI Pipes', 'GP Pipes', 'HR Pipes', 'Crfh Pipes'].map(pipeType => {
           if (details[pipeType] && details[pipeType].length > 0) {
             return (
               <div key={pipeType} className="pipe-section">
                 <h3 className="pipe-title">
-                  {pipeType.replace(/([A-Z])/g, ' $1').trim()} 
+                  {pipeType} 
                 </h3>
                 <div className="pipes">
                   {details[pipeType].map((pipe, index) => (
@@ -129,12 +131,11 @@ const CompanyDetails = ({ company, details }) => {
                 </div>
                 <div className="summary-box">
                   <div className="summary-row">
-                    <span>Total</span>
-                    <span>-</span>
+                    <span>Total      - </span>
                   </div>
+                  <span className='summary-value'></span>
                   <div className="summary-row">
                     <span>Freight-Rs./- Per M.T.</span>
-                    <span></span>
                   </div>
                 </div>
               </div>

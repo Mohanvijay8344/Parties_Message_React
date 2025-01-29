@@ -140,7 +140,7 @@ body {
 }
 
 .pipe-item {
-  padding: 12px 15px;
+  padding: 10px 10px;
   background-color: #f8f9fa;
   border: 1px solid #e9ecef;
   border-radius: 4px;
@@ -172,6 +172,7 @@ body {
   padding: 8px 0;
   font-size: 14px;
   color: #333;
+  margin-bottom: 1rem;
 }
 
 .summary-row + .summary-row {
@@ -207,4 +208,8 @@ body {
   .copy-button {
     width: 100%;
   }
+}
+
+.summary-value{
+  display: block;
 }
