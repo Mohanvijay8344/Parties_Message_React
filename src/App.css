@@ -213,3 +213,46 @@ body {
 .summary-value{
   display: block;
 }
+
+/* Dropdown Container */
+.summary-row select {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #000000;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+/* Hover Effect */
+.summary-row select:hover {
+  border-color: #007bff;
+}
+
+/* Focus Effect */
+.summary-row select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Dropdown Arrow Styling */
+.summary-row select::-ms-expand {
+  display: none; /* Hide default arrow in IE */
+}
+
+.summary-row select {
+  appearance: none; /* Remove default styles */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 10px;
+}
+
+/* Option Styling */
+.summary-row select option {
+  padding: 10px;
+  font-size: 16px;
+}
