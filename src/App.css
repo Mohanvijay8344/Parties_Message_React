@@ -221,9 +221,11 @@ body {
   border: 2px solid #ccc;
   border-radius: 8px;
   font-size: 16px;
-  background-color: #000000;
+  background-color: #ffffff;
   transition: all 0.3s ease;
   outline: none;
+  cursor: pointer;
+  color: #333;
 }
 
 /* Hover Effect */
