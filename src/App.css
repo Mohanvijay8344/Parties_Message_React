@@ -294,3 +294,65 @@ body {
   border-color: #007bff;
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
+
+/* Quantity Input Container */
+.quantity-input {
+  width: 80px; /* Adjust width as needed */
+  padding: 5px;
+  margin-left: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+/* Hover State */
+.quantity-input:hover {
+  border-color: #888;
+}
+
+/* Focus State */
+.quantity-input:focus {
+  border-color: #007bff; /* Blue border on focus */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Subtle glow effect */
+}
+
+/* Disabled State */
+.quantity-input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+/* Placeholder Text */
+.quantity-input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* Error State (Optional) */
+.quantity-input.error {
+  border-color: #ff0000; /* Red border for error */
+  background-color: #ffe6e6; /* Light red background */
+}
+
+.quantity-validation {
+  font-size: 0.9rem; /* Slightly smaller font */
+  margin-left: 0.5rem; /* Add some spacing from the input */
+  font-weight: bold;
+}
+
+.valid-quantity {
+  color: green; /* Green for valid */
+  font-size: 1rem; /* Slightly larger to stand out */
+}
+
+.invalid-quantity {
+  color: red; /* Red for invalid */
+  font-size: 1rem; /* Slightly larger to stand out */
+  background-color: #ffe5e5; /* Light red background for better visibility */
+  border-radius: 5px; /* Rounded edges */
+  padding: 2px 5px; /* Add some padding around the text */
+  display: inline-block; /* Ensure proper spacing */
+}

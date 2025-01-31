@@ -29,10 +29,11 @@ export const processData = (inputData) => {
 
     // Check for company names (contains " - " but not "Pipes")
     if (line.includes(" - ") && !line.includes("Pipes")) {
-      currentCompany = line.replace(/[0-9.]/g, "");
+      currentCompany = line.replace(/[0-9.]/g, "").trim();
       if (!companies[currentCompany]) {
         companies[currentCompany] = {
           "GI Pipes": [],
+          "GI PIpes": [],
           "GP Pipes": [],
           "HR Pipes": [],
           "CRFH Pipes": [],
@@ -62,11 +63,14 @@ export const processData = (inputData) => {
         ? "GI Slit Coil"
         : line.toLowerCase().includes("crfh pipes")
         ? "CRFH Pipes"
+        : line.toLowerCase().includes("GI PIpes")
+        ? "GI Pipes"
         : null;
 
       if (pipeType && currentCompany) {
         const spec = line
           .replace(/^GI Pipes /i, "")
+          .replace(/^GI PIpes /i, "")
           .replace(/^GP Pipes /i, "")
           .replace(/^HR Pipes /i, "")
           .replace(/^Crfh Pipes /i, "")
@@ -75,9 +79,13 @@ export const processData = (inputData) => {
           .replace(/^GI Slit Coil /i, "")
           .replace(/^CRFH Pipes /i, "");
 
+          console.log("Spec being processed:", spec);
+          const quantityMatch = spec.match(/MM\s*(\d+(\.\d+)?)/); // Matches a number after "MM"
+          const quantity = quantityMatch ? quantityMatch[1].trim() : ""; // Extract the matched quantity or leave empty
+
         companies[currentCompany][pipeType].push({
-          spec: cleanSpec(spec),
-          quantity: "",
+          spec: cleanSpec(spec.replace(/- (\d+(\.\d+)?)/, "").trim()), // Remove quantity from spec
+          quantity: quantity, // Add extracted quantity
         });
       }
     }
@@ -85,5 +93,4 @@ export const processData = (inputData) => {
 
   console.log(companies);
   return companies;
-  
 };

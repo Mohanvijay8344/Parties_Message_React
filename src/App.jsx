@@ -24,13 +24,7 @@ function App() {
           />
         </div>
         <CompanyList companies={processedData} />
-        <div className="companies-grid">
-          {Object.entries(processedData).map(([company, details]) => (
-            <div key={company} className="company-card-wrapper">
-              <CompanyDetails company={company} details={details} />
-            </div>
-          ))}
-        </div>
+        
       </div>
     </div>
   );
