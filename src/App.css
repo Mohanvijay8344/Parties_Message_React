@@ -258,3 +258,39 @@ body {
   padding: 10px;
   font-size: 16px;
 }
+
+/* 🔹 Dropdown Container */
+.dropdown-container {
+  margin-bottom: 20px;
+  color: black;
+}
+
+.dropdown-container label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+
+}
+
+.company-dropdown {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+  outline: none;
+  color: black;
+}
+
+/* Hover Effect */
+.company-dropdown:hover {
+  border-color: #007bff;
+}
+
+/* Focus Effect */
+.company-dropdown:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
