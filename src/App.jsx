@@ -3,7 +3,8 @@ import "./App.css";
 import { CompanyDetails } from "./CompanyDetails";
 import { processData } from "./processData";
 import CompanyList from "./CompanyList";
-import PdfDataExtractor from "./PdfDataExtractor";
+import RateCalculation from "./RateCalculation";
+import FreightCalculation from "./FreightCalculation";
 
 function App() {
   const [inputData, setInputData] = useState("");
@@ -24,7 +25,11 @@ function App() {
             placeholder="Enter your pipe data here..."
           />
         </div>
-        <CompanyList companies={processedData} />
+        <div className="output-container">
+          <CompanyList companies={processedData} />
+          <RateCalculation />
+          <FreightCalculation />
+        </div>
         
       </div>
     </div>

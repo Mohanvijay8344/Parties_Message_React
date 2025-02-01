@@ -5,6 +5,7 @@ export const CompanyDetails = ({ company, details }) => {
   const [selectedTransport, setSelectedTransport] = useState("");
   const [quantities, setQuantities] = useState({}); // State to store quantities
   const [freight, setFreight] = useState("");
+  const [nosValues, setNosValues] = useState({});
 
   const transportOptions = [
     "K.S.Shanmugasundaram Transports",
@@ -24,6 +25,7 @@ export const CompanyDetails = ({ company, details }) => {
     }));
   };
 
+  
   const validateQuantity = (enteredQty, actualQty) => {
     if (!actualQty || isNaN(actualQty)) return false; // Ensure actualQty is valid
     const difference = Math.abs(enteredQty - actualQty); // Calculate the absolute difference
@@ -51,7 +53,9 @@ export const CompanyDetails = ({ company, details }) => {
         details[pipeType].forEach((pipe) => {
           const key = `${pipeType}-${pipe.spec}`;
           const quantity = quantities[key] || "";
-          text += `${pipe.spec} - ${quantity}\n`;
+          const nosText = pipe.spec.includes("173") && nosValues[key] ? ` (${nosValues[key]} Nos)` : ""; 
+
+          text += `${pipe.spec} - ${quantity}${nosText}\n`;
         });
         text += `\n`;
       }
@@ -73,6 +77,13 @@ export const CompanyDetails = ({ company, details }) => {
     } catch (err) {
       console.error("Failed to copy text:", err);
     }
+  };
+
+  const handleNosChange = (pipeType, spec, value) => {
+    setNosValues((prevNos) => ({
+      ...prevNos,
+      [`${pipeType}-${spec}`]: value,
+    }));
   };
 
   const freightAmount = (e) => {
@@ -139,6 +150,17 @@ export const CompanyDetails = ({ company, details }) => {
                           placeholder="Qty"
                           className="quantity-input"
                         />
+                         {pipe.spec.includes("173") && (
+                          <span>
+                            <input 
+                              type="number" 
+                              placeholder="Nos" 
+                              className="quantity-input" 
+                              value={nosValues[key] || ""}
+                              onChange={(e) => handleNosChange(pipeType, pipe.spec, e.target.value)}
+                            />
+                          </span>
+                        )}
                         {quantities[key] && (
                           <span className="quantity-validation">
                             {isValid ? (
