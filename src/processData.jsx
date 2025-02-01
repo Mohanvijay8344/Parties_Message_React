@@ -6,7 +6,18 @@ export const processData = (inputData) => {
   const companies = {};
   let currentCompany = "";
 
-  const cleanSpec = (spec) => {
+  // Mapping for normalizing pipe types
+  const pipeTypeMapping = {
+    "gi pipes": "GI Pipes",
+    "gp pipes": "GP Pipes",
+    "hr pipes": "HR Pipes",
+    "crfh pipes": "CRFH Pipes", // Normalize to "CRFH Pipes"
+    "gp slit coil": "GP Slit Coil",
+    "hr slit coil": "HR Slit Coil",
+    "gi slit coil": "GI Slit Coil",
+  };
+
+  const cleanSpec = (spec, pipeType) => {
     // Remove all suffixes and clean the spec
     let cleaned = spec
       .replace(/ - P\/E/g, "")
@@ -19,25 +30,29 @@ export const processData = (inputData) => {
       .replace(/ Nos$/, "")
       .trim();
 
-    // Extract only the size part (remove any trailing numbers)
-    const match = cleaned.match(/^[\d.x]+/);
-    return match ? match[0] : cleaned;
-  };
+      if (pipeType.toLowerCase().includes("coil")) {
+        return cleaned; // Return the full specification for coils
+      }
+      
+      // Extract only the size part (remove any trailing numbers)
+      const match = cleaned.match(/^[\d.x]+/);
+      return match ? match[0] : cleaned;
+    };
+    
+    
 
-  for (let i = 0; i < lines.length; i++) {
+    for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    // Check for company names (contains " - " but not "Pipes")
-    if (line.includes(" - ") && !line.includes("Pipes")) {
+    // Keep this line unchanged
+    if (line.includes(" - ") && !line.toLowerCase().includes("gp") && !line.toLowerCase().includes("hr") && !line.toLowerCase().includes("gi") && !line.toLowerCase().includes("crfh") && !line.toLowerCase().includes("coli")) {
       currentCompany = line.replace(/[0-9.]/g, "").trim();
       if (!companies[currentCompany]) {
         companies[currentCompany] = {
           "GI Pipes": [],
-          "GI PIpes": [],
           "GP Pipes": [],
           "HR Pipes": [],
-          "CRFH Pipes": [],
-          "Crfh Pipes": [],
+          "CRFH Pipes": [], // Use normalized key
           "GP Slit Coil": [],
           "HR Slit Coil": [],
           "GI Slit Coil": [],
@@ -46,45 +61,45 @@ export const processData = (inputData) => {
       continue;
     }
 
-    if (line.includes("Pipes") || line.includes("Coil")) {
-      const pipeType = line.toLowerCase().includes("gi pipes")
-        ? "GI Pipes"
-        : line.toLowerCase().includes("gp pipes")
-        ? "GP Pipes"
-        : line.toLowerCase().includes("hr pipes")
-        ? "HR Pipes"
-        : line.toLowerCase().includes("crfh pipes")
-        ? "Crfh Pipes"
-        : line.toLowerCase().includes("gp slit coil")
-        ? "GP Slit Coil"
-        : line.toLowerCase().includes("hr slit coil")
-        ? "HR Slit Coil"
-        : line.toLowerCase().includes("gi slit coil")
-        ? "GI Slit Coil"
-        : line.toLowerCase().includes("crfh pipes")
-        ? "CRFH Pipes"
-        : line.toLowerCase().includes("GI PIpes")
-        ? "GI Pipes"
-        : null;
+    if (line.toLowerCase().includes("pipes") || line.toLowerCase().includes("coil")) {
+      const lowerCaseLine = line.toLowerCase();
+      const pipeType = pipeTypeMapping[
+        Object.keys(pipeTypeMapping).find((key) => lowerCaseLine.includes(key))
+      ];
 
       if (pipeType && currentCompany) {
-        const spec = line
+        // Preserve the original line for display
+        const originalLine = line;
+
+        // Extract the specification and quantity
+        const specAndQuantity = originalLine
           .replace(/^GI Pipes /i, "")
-          .replace(/^GI PIpes /i, "")
           .replace(/^GP Pipes /i, "")
           .replace(/^HR Pipes /i, "")
           .replace(/^Crfh Pipes /i, "")
           .replace(/^GP Slit Coil /i, "")
           .replace(/^HR Slit Coil /i, "")
           .replace(/^GI Slit Coil /i, "")
-          .replace(/^CRFH Pipes /i, "");
+          .trim();
 
-          console.log("Spec being processed:", spec);
-          const quantityMatch = spec.match(/MM\s*(\d+(\.\d+)?)/); // Matches a number after "MM"
-          const quantity = quantityMatch ? quantityMatch[1].trim() : ""; // Extract the matched quantity or leave empty
+        // Case 1: Quantity is on the same line (e.g., "88.90x2.50MM - SWS 12" or "88.90x2.50MM - SWS 0.6")
+const quantityMatchSameLine = specAndQuantity.match(/(\d+(\.\d+)?)$/); // Match the last number (integer or decimal) in the line
+let quantity = quantityMatchSameLine ? parseFloat(quantityMatchSameLine[0]) : 0; // Use parseFloat to handle decimals
 
+// Case 2: Quantity is on the next line (e.g., "88.90x2.50MM - SWS" followed by "0.6")
+if (!quantityMatchSameLine && i + 1 < lines.length && !isNaN(parseFloat(lines[i + 1]))) {
+  quantity = parseFloat(lines[i + 1]); // Use parseFloat to handle decimals
+  i++; // Skip the next line (quantity)
+}
+
+        // Remove the quantity from the spec
+        const spec = specAndQuantity.replace(/(\d+)$/, "").trim();
+        
+        
         companies[currentCompany][pipeType].push({
-          spec: cleanSpec(spec.replace(/- (\d+(\.\d+)?)/, "").trim()), // Remove quantity from spec
+          spec: cleanSpec(spec, pipeType), // Clean the spec for processing
+          originalSpec: spec, // Preserve the original spec for display
+          originalPipeType: originalLine.split(" ")[0] + " " + originalLine.split(" ")[1], // Preserve original pipe type
           quantity: quantity, // Add extracted quantity
         });
       }

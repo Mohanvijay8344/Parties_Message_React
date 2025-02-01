@@ -3,6 +3,7 @@ import "./App.css";
 import { CompanyDetails } from "./CompanyDetails";
 import { processData } from "./processData";
 import CompanyList from "./CompanyList";
+import PdfDataExtractor from "./PdfDataExtractor";
 
 function App() {
   const [inputData, setInputData] = useState("");

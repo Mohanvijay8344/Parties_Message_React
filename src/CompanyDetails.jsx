@@ -118,7 +118,6 @@ export const CompanyDetails = ({ company, details }) => {
                     const key = `${pipeType}-${pipe.spec}`;
                     const enteredQuantity = parseFloat(quantities[key]) || 0;
                     const actualQuantity = parseFloat(pipe.quantity) || 0;
-                    console.log(enteredQuantity, actualQuantity);
 
                     const isValid = validateQuantity(
                       enteredQuantity,
