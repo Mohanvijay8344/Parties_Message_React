@@ -46,7 +46,7 @@ export const processData = (inputData) => {
 
     // Keep this line unchanged
     if (line.includes(" - ") && !line.toLowerCase().includes("gp") && !line.toLowerCase().includes("hr") && !line.toLowerCase().includes("gi") && !line.toLowerCase().includes("crfh") && !line.toLowerCase().includes("coli")) {
-      currentCompany = line.replace(/[0-9.]/g, "").trim();
+      currentCompany = line.replace(/[0-9.]/g, "").replace(/ Nos$/, "").trim();
       if (!companies[currentCompany]) {
         companies[currentCompany] = {
           "GI Pipes": [],
