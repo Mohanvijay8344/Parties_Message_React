@@ -29,6 +29,18 @@ function RateCalculation() {
     }
   };
 
+  const handleKeyDown = (e, field) => {
+    if (e.key === "Enter" || e.key === "Tab") {
+      e.preventDefault();
+      const fields = ["rate", "freight", "option", "calculate-btn"];
+      const currentIndex = fields.indexOf(field);
+      const nextField = document.getElementById(fields[currentIndex + 1]);
+      if (nextField) {
+        nextField.focus();
+      }
+    }
+  };
+
   return (
     <div className="container">
       <h2>Rate Calculation</h2>
@@ -36,29 +48,38 @@ function RateCalculation() {
         <label>Rate:</label>
         <input
           type="number"
+          id="rate"
           value={rate}
           onChange={(e) => setRate(parseFloat(e.target.value) || 0)}
           placeholder="Enter rate"
+          onKeyDown={(e) => handleKeyDown(e, "rate")}
         />
       </div>
       <div className="input-group">
         <label>Freight:</label>
         <input
           type="number"
+          id="freight"
           value={freight}
           onChange={(e) => setFreight(parseFloat(e.target.value) || 0)}
           placeholder="Enter freight"
+          onKeyDown={(e) => handleKeyDown(e, "freight")}
         />
       </div>
       <div className="input-group">
         <label>Calculation Type:</label>
-        <select value={option} onChange={(e) => setOption(e.target.value)}>
+        <select
+          id="option"
+          value={option}
+          onChange={(e) => setOption(e.target.value)}
+          onKeyDown={(e) => handleKeyDown(e, "option")}
+        >
           <option>All Inclusive</option>
           <option>Including Freight + GST Extra</option>
           <option>Including GST & Freight Extra</option>
         </select>
       </div>
-      <button onClick={calculateRate} className="calculate-btn">Calculate</button>
+      <button id="calculate-btn" onClick={calculateRate} className="calculate-btn">Calculate</button>
       <div className="result">Basic Rate: {calculatedRate}</div>
       <button onClick={handleCopy} className="copy-btn">
         {copied ? "Copied!" : "Copy"}

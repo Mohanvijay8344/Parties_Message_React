@@ -15,6 +15,18 @@ function FreightCalculation() {
     }
   };
 
+  const handleKeyDown = (e, field) => {
+    if(e.key === 'Enter' || e.key === 'Tab' ){
+      e.preventDefault();
+      const fields = ["freight", "quantity", "freight-calculate-btn"]
+      const currentIndex = fields.indexOf(field)
+      const nextField = document.getElementById(fields[currentIndex + 1])
+      if(nextField){
+        nextField.focus()
+      }
+    }
+  }
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(calculatedFreight);
@@ -32,23 +44,27 @@ function FreightCalculation() {
         <label>Total Freight:</label>
         <input
           type="number"
+          id="freight"
           value={freight}
           onChange={(e) => setFreight(parseFloat(e.target.value) || 0)}
           placeholder="Enter total freight"
+          onKeyDown={(e) => handleKeyDown(e, "freight")}
         />
       </div>
       <div className="input-group">
         <label>Total Quantity:</label>
         <input
           type="number"
+          id="quantity"
           value={quantity}
           onChange={(e) => setQuantity(parseFloat(e.target.value) || 0)}
           placeholder="Enter total quantity"
+          onKeyDown={(e) => handleKeyDown(e, "quantity")}
         />
       </div>
-      <button onClick={calculateFreight} className="calculate-btn">Calculate</button>
+      <button onClick={calculateFreight} className="calculate-btn" id="freight-calculate-btn">Calculate</button>
       <div className="result">Freight per unit: {calculatedFreight}</div>
-      <button onClick={handleCopy} className="copy-btn">
+      <button onClick={handleCopy} className="copy-btn" >
         {copied ? "Copied!" : "Copy"}
       </button>
     </div>

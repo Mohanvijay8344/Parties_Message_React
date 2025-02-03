@@ -91,6 +91,16 @@ export const CompanyDetails = ({ company, details }) => {
     setFreight(amount);
   };
 
+  const handleKeyDown = (e, currentIndex, elements) => {
+    if (e.key === "Enter" || e.key === "Tab") {
+      e.preventDefault();
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < elements.length) {
+        elements[nextIndex].focus();
+      }
+    }
+  };
+
   return (
     <div className="company-card">
       <div className="company-header">
@@ -149,6 +159,9 @@ export const CompanyDetails = ({ company, details }) => {
                           }
                           placeholder="Qty"
                           className="quantity-input"
+                          onKeyDown={(e) =>
+                            handleKeyDown(e, index, document.querySelectorAll(".quantity-input"))
+                          }
                         />
                          {pipe.spec.includes("173") && (
                           <span>
@@ -158,6 +171,9 @@ export const CompanyDetails = ({ company, details }) => {
                               className="quantity-input" 
                               value={nosValues[key] || ""}
                               onChange={(e) => handleNosChange(pipeType, pipe.spec, e.target.value)}
+                              onKeyDown={(e) =>
+                                handleKeyDown(e, index, document.querySelectorAll(".quantity-input"))
+                              }
                             />
                           </span>
                         )}
@@ -203,3 +219,4 @@ export const CompanyDetails = ({ company, details }) => {
     </div>
   );
 };
+
