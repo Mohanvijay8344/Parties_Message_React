@@ -45,8 +45,9 @@ export const processData = (inputData) => {
     const line = lines[i];
 
     // Keep this line unchanged
-    if (line.includes(" - ") && !line.toLowerCase().includes("gp") && !line.toLowerCase().includes("hr") && !line.toLowerCase().includes("gi") && !line.toLowerCase().includes("crfh") && !line.toLowerCase().includes("coli")) {
-      currentCompany = line.replace(/[0-9.]/g, "").replace(/ Nos$/, "").trim();
+    if (line.includes(" - ") && !line.toLowerCase().includes("gp pipes") && !line.toLowerCase().includes("hr pipes") && !line.toLowerCase().includes("gi pipes") && !line.toLowerCase().includes("crfh pipes") && !line.toLowerCase().includes("coli")) {
+      currentCompany = line.replace(/[0-9.]+$/, "").trim();
+
       if (!companies[currentCompany]) {
         companies[currentCompany] = {
           "GI Pipes": [],
@@ -64,8 +65,9 @@ export const processData = (inputData) => {
     if (line.toLowerCase().includes("pipes") || line.toLowerCase().includes("coil")) {
       const lowerCaseLine = line.toLowerCase();
       const pipeType = pipeTypeMapping[
-        Object.keys(pipeTypeMapping).find((key) => lowerCaseLine.includes(key))
+        Object.keys(pipeTypeMapping).find((key) => lowerCaseLine.includes(key.toLowerCase()))
       ];
+      
 
       if (pipeType && currentCompany) {
         // Preserve the original line for display
@@ -83,7 +85,8 @@ export const processData = (inputData) => {
           .trim();
 
         // Case 1: Quantity is on the same line (e.g., "88.90x2.50MM - SWS 12" or "88.90x2.50MM - SWS 0.6")
-const quantityMatchSameLine = specAndQuantity.match(/(\d+(\.\d+)?)$/); // Match the last number (integer or decimal) in the line
+        const quantityMatchSameLine = specAndQuantity.match(/(\d+(\.\d+)?)\s*$/);
+
 let quantity = quantityMatchSameLine ? parseFloat(quantityMatchSameLine[0]) : 0; // Use parseFloat to handle decimals
 
 // Case 2: Quantity is on the next line (e.g., "88.90x2.50MM - SWS" followed by "0.6")
@@ -106,6 +109,5 @@ if (!quantityMatchSameLine && i + 1 < lines.length && !isNaN(parseFloat(lines[i 
     }
   }
 
-  console.log(companies);
   return companies;
 };
