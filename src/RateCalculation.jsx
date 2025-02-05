@@ -50,7 +50,7 @@ function RateCalculation() {
           type="number"
           id="rate"
           value={rate}
-          onChange={(e) => setRate(parseFloat(e.target.value) || 0)}
+          onChange={(e) => setRate(parseFloat(e.target.value))}
           placeholder="Enter rate"
           onKeyDown={(e) => handleKeyDown(e, "rate")}
         />
@@ -61,7 +61,7 @@ function RateCalculation() {
           type="number"
           id="freight"
           value={freight}
-          onChange={(e) => setFreight(parseFloat(e.target.value) || 0)}
+          onChange={(e) => setFreight(parseFloat(e.target.value))}
           placeholder="Enter freight"
           onKeyDown={(e) => handleKeyDown(e, "freight")}
         />

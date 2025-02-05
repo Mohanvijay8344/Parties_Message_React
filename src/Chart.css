@@ -1,0 +1,48 @@
+.chart-container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
+  }
+  
+  .chart-table {
+    margin-bottom: 20px;
+  }
+  
+  .chart-table h2 {
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+  }
+  
+  thead th {
+    background-color: #4CAF50;
+    color: rgb(0, 0, 0);
+    padding: 8px;
+    text-align: left;
+  }
+  
+  tbody td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  tbody tr:hover {
+    background-color: #ddd;
+  }
+  
+  table th, table td {
+    text-align: center;
+    color:  black;
+  }
+  

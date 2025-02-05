@@ -46,7 +46,7 @@ function FreightCalculation() {
           type="number"
           id="freight"
           value={freight}
-          onChange={(e) => setFreight(parseFloat(e.target.value) || 0)}
+          onChange={(e) => setFreight(parseFloat(e.target.value))}
           placeholder="Enter total freight"
           onKeyDown={(e) => handleKeyDown(e, "freight")}
         />
@@ -57,7 +57,7 @@ function FreightCalculation() {
           type="number"
           id="quantity"
           value={quantity}
-          onChange={(e) => setQuantity(parseFloat(e.target.value) || 0)}
+          onChange={(e) => setQuantity(parseFloat(e.target.value))}
           placeholder="Enter total quantity"
           onKeyDown={(e) => handleKeyDown(e, "quantity")}
         />

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 export const CompanyDetails = ({ company, details }) => {
   const [copied, setCopied] = useState(false);
@@ -18,6 +18,17 @@ export const CompanyDetails = ({ company, details }) => {
     "Party Truck",
   ];
 
+  // Refs to track input fields
+  const inputRefs = useRef([]);
+
+  useEffect(() => {
+    setQuantities({});
+    setNosValues({});
+    setFreight("");
+    setSelectedTransport("");
+    setCopied(false);
+  }, [company]);
+
   const handleQuantityChange = (pipeType, spec, value) => {
     setQuantities((prevQuantities) => ({
       ...prevQuantities,
@@ -25,7 +36,6 @@ export const CompanyDetails = ({ company, details }) => {
     }));
   };
 
-  
   const validateQuantity = (enteredQty, actualQty) => {
     if (!actualQty || isNaN(actualQty)) return false; // Ensure actualQty is valid
     const difference = Math.abs(enteredQty - actualQty); // Calculate the absolute difference
@@ -53,7 +63,7 @@ export const CompanyDetails = ({ company, details }) => {
         details[pipeType].forEach((pipe) => {
           const key = `${pipeType}-${pipe.spec}`;
           const quantity = quantities[key] || "";
-          const nosText = pipe.spec.includes("173") && nosValues[key] ? ` (${nosValues[key]} Nos)` : ""; 
+          const nosText = pipe.spec.includes("173") && nosValues[key] ? ` (${nosValues[key]} Nos)` : "";
 
           text += `${pipe.spec} - ${quantity}${nosText}\n`;
         });
@@ -91,15 +101,25 @@ export const CompanyDetails = ({ company, details }) => {
     setFreight(amount);
   };
 
-  const handleKeyDown = (e, currentIndex, elements) => {
+  const handleKeyDown = (e, currentIndex) => {
     if (e.key === "Enter" || e.key === "Tab") {
       e.preventDefault();
       const nextIndex = currentIndex + 1;
-      if (nextIndex < elements.length) {
-        elements[nextIndex].focus();
+      if (nextIndex < inputRefs.current.length) {
+        inputRefs.current[nextIndex].focus();
       }
     }
   };
+
+  // Flatten all input fields into a single array
+  const flattenedInputs = [];
+  Object.keys(details).forEach((pipeType) => {
+    if (details[pipeType] && details[pipeType].length > 0) {
+      details[pipeType].forEach((pipe, index) => {
+        flattenedInputs.push({ pipeType, pipe, index });
+      });
+    }
+  });
 
   return (
     <div className="company-card">
@@ -140,10 +160,13 @@ export const CompanyDetails = ({ company, details }) => {
                     const enteredQuantity = parseFloat(quantities[key]) || 0;
                     const actualQuantity = parseFloat(pipe.quantity) || 0;
 
-                    const isValid = validateQuantity(
-                      enteredQuantity,
-                      actualQuantity
+                    const isValid = validateQuantity(enteredQuantity, actualQuantity);
+
+                    // Find the index of the current input in the flattened array
+                    const flattenedIndex = flattenedInputs.findIndex(
+                      (input) => input.pipeType === pipeType && input.pipe.spec === pipe.spec
                     );
+
                     return (
                       <div key={index} className="pipe-item">
                         <span className="pipe-spec">{pipe.spec} - </span>
@@ -151,29 +174,23 @@ export const CompanyDetails = ({ company, details }) => {
                           type="number"
                           value={quantities[key] || ""}
                           onChange={(e) =>
-                            handleQuantityChange(
-                              pipeType,
-                              pipe.spec,
-                              e.target.value
-                            )
+                            handleQuantityChange(pipeType, pipe.spec, e.target.value)
                           }
                           placeholder="Qty"
                           className="quantity-input"
-                          onKeyDown={(e) =>
-                            handleKeyDown(e, index, document.querySelectorAll(".quantity-input"))
-                          }
+                          ref={(el) => (inputRefs.current[flattenedIndex] = el)} // Assign ref based on flattened index
+                          onKeyDown={(e) => handleKeyDown(e, flattenedIndex)}
                         />
-                         {pipe.spec.includes("173") && (
+                        {pipe.spec.includes("173") && (
                           <span>
-                            <input 
-                              type="number" 
-                              placeholder="Nos" 
-                              className="quantity-input" 
+                            <input
+                              type="number"
+                              placeholder="Nos"
+                              className="quantity-input"
                               value={nosValues[key] || ""}
                               onChange={(e) => handleNosChange(pipeType, pipe.spec, e.target.value)}
-                              onKeyDown={(e) =>
-                                handleKeyDown(e, index, document.querySelectorAll(".quantity-input"))
-                              }
+                              ref={(el) => (inputRefs.current[flattenedIndex + 1] = el)} // Assign ref for Nos input
+                              onKeyDown={(e) => handleKeyDown(e, flattenedIndex + 1)}
                             />
                           </span>
                         )}
@@ -219,4 +236,3 @@ export const CompanyDetails = ({ company, details }) => {
     </div>
   );
 };
-

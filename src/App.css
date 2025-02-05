@@ -150,7 +150,7 @@ body {
 
 .pipe-spec {
   font-family: 'Roboto Mono', monospace;
-  font-size: 14px;
+  font-size: 18px;
   color: #333;
   display: block;
   white-space: nowrap;
@@ -170,7 +170,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-  font-size: 14px;
+  font-size: 18px;
   color: #333;
   margin-bottom: 1rem;
 }
