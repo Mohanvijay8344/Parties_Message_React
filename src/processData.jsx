@@ -19,8 +19,11 @@ export const processData = (inputData) => {
   };
 
   const cleanSpec = (spec, pipeType) => {
-    // Remove all suffixes and clean the spec
-    let cleaned = spec
+    // Remove text inside parentheses
+    let cleaned = spec.replace(/\(.*?\)/g, "").trim(); 
+  
+    // Remove suffixes and clean spec
+    cleaned = cleaned
       .replace(/ - P\/E/g, "")
       .replace(/ - With Seal/g, "")
       .replace(/ - Without Seal/g, "")
@@ -30,16 +33,16 @@ export const processData = (inputData) => {
       .replace(/MM/g, "")
       .replace(/ Nos$/, "")
       .trim();
-
+  
     if (pipeType.toLowerCase().includes("coil")) {
       return cleaned; // Return the full specification for coils
     }
-
+  
     // Extract only the size part (remove any trailing numbers)
     const match = cleaned.match(/^[\d.x]+/);
     return match ? match[0] : cleaned;
   };
-
+  
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
@@ -61,7 +64,27 @@ export const processData = (inputData) => {
         };
       }
       continue;
-    }
+    } 
+
+    if (line.toLowerCase().includes("thrissur")) {
+      const baseCompanyName = line.replace(/[0-9.]+$/, "").trim();
+      companyCounter++; // Increment counter for each occurrence
+      currentCompany = `${baseCompanyName} ${companyCounter}`; // Append counter to company name
+
+      if (!companies[currentCompany]) {
+        companies[currentCompany] = {
+          "GI Pipes": [],
+          "GP Pipes": [],
+          "HR Pipes": [],
+          "CRFH Pipes": [], // Use normalized key
+          "GP Slit Coil": [],
+          "HR Slit Coil": [],
+          "GI Slit Coil": [],
+        };
+      }
+      continue;
+    } 
+
 
     // Check if the line contains a pipe type
     const lowerCaseLine = line.toLowerCase();

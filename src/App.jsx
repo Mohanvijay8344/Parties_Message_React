@@ -6,6 +6,8 @@ import CompanyList from "./CompanyList";
 import RateCalculation from "./RateCalculation";
 import FreightCalculation from "./FreightCalculation";
 import Chart from "./Chart";
+import Calculator from "./Calculator";
+import PieceCalculator from "./PieceCalculator";
 
 function App() {
   const [inputData, setInputData] = useState("");
@@ -28,10 +30,18 @@ function App() {
         </div>
         <div className="output-container">
           <CompanyList companies={processedData} />
+          <div className="calculator-container">
+        <Calculator />
+        <div className="rate-freight-container">
           <RateCalculation />
           <FreightCalculation />
 
         </div>
+
+          </div>
+
+        </div>
+        <PieceCalculator />
         <Chart />
       </div>
     </div>

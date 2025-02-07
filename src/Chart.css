@@ -1,5 +1,4 @@
 .chart-container {
-    display: flex;
     gap: 20px;
     padding: 20px;
     background-color: #f9f9f9;
@@ -16,7 +15,7 @@
   }
   
   table {
-    width: 100%;
+    width: 90%;
     border-collapse: collapse;
     margin-bottom: 10px;
   }
@@ -45,4 +44,15 @@
     text-align: center;
     color:  black;
   }
-  
+
+.result-cell{
+  padding: 8px;
+  font-size: 18px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+  color: #333;
+  font-weight: bold;
+}
