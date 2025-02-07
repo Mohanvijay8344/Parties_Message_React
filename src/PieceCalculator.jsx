@@ -11,15 +11,15 @@ const PieceCalculator = () => {
   const findQuantityRef = useRef(null);
 
   const handleTotalPiecesChange = (e) => {
-    setTotalPieces(parseInt(e.target.value, 10) || 0);
+    setTotalPieces(parseInt(e.target.value, 10));
   };
 
   const handleTotalQuantityChange = (e) => {
-    setTotalQuantity(parseInt(e.target.value, 10) || 0);
+    setTotalQuantity(parseInt(e.target.value, 10));
   };
 
   const handleFindQuantityChange = (e) => {
-    setFindQuantity(parseInt(e.target.value, 10) || 0);
+    setFindQuantity(parseInt(e.target.value, 10));
   };
 
   const handleKeyDown = (e, nextRef) => {

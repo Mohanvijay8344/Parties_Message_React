@@ -56,7 +56,7 @@ const Chart = () => {
                   <input
                     type="number"
                     value={weight}
-                    onChange={(e) => setWeight(parseFloat(e.target.value) || 0)}
+                    onChange={(e) => setWeight(parseFloat(e.target.value))}
                     className="table-input"
                   />
                 </td>
@@ -64,7 +64,7 @@ const Chart = () => {
                   <input
                     type="number"
                     value={pieces}
-                    onChange={(e) => setPieces(parseInt(e.target.value, 10) || 0)}
+                    onChange={(e) => setPieces(parseInt(e.target.value, 10))}
                     className="table-input"
                   />
                 </td>
