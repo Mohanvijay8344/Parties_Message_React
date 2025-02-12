@@ -31,12 +31,12 @@ function App() {
         <div className="output-container">
           <CompanyList companies={processedData} />
           <div className="calculator-container">
-        <Calculator />
         <div className="rate-freight-container">
           <RateCalculation />
           <FreightCalculation />
 
         </div>
+        <Calculator />
 
           </div>
 

@@ -38,6 +38,7 @@ body {
   min-height: 100vh;
   background-color: #f4f4f4;
   padding: 10px;
+  color: #999;
 }
 
 /* Content wrapper */
@@ -87,7 +88,7 @@ body {
 .company-list {
   flex: 1;
   min-width: 300px;
-  max-width: 650px;
+  max-width: 550px;
   padding: 15px;
   background: #ffffff;
   border-radius: 10px;
@@ -474,3 +475,125 @@ input, select {
   font-weight: bold;
 }
 
+/* Dropdown container */
+.dropdown {
+  position: relative;
+  display: inline-block;
+  padding-left: 5px;
+}
+
+/* Three-dot button */
+.dropdown-toggle {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  color: #555;
+  transition: color 0.3s ease;
+}
+
+.dropdown-toggle:hover {
+  color: #000;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 5px 0;
+  min-width: 120px;
+  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(5px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+
+/* Show dropdown when active */
+.dropdown:hover .dropdown-menu,
+.dropdown-menu.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Dropdown buttons */
+.dropdown-menu button {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  transition: background 0.2s, color 0.2s;
+}
+
+.dropdown-menu button:hover {
+  background: #f4f4f4;
+  color: #000;
+}
+
+/* Optional: Add a smooth fade-in effect */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-menu.open {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Pipe spec text */
+.pipe-spec {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Editable input field */
+.edit-input {
+  font-size: 16px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border 0.2s ease-in-out;
+}
+
+.edit-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Complete button */
+.complete-button {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.complete-button:hover {
+  background: #218838;
+}

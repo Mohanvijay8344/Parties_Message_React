@@ -1,11 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 
-export const CompanyDetails = ({ company, details }) => {
+export const CompanyDetails = ({ company, details = {} }) => {
   const [copied, setCopied] = useState(false);
   const [selectedTransport, setSelectedTransport] = useState("");
   const [quantities, setQuantities] = useState({}); // State to store quantities
   const [freight, setFreight] = useState("");
   const [nosValues, setNosValues] = useState({});
+  const [dropdownOpen, setDropdownOpen] = useState(null); // State to manage dropdown visibility
+  const [editMode, setEditMode] = useState(null); // State to manage edit mode
+  const [pipeDetails, setPipeDetails] = useState(details); // State to manage the list of pipes
+  const [tempEditValue, setTempEditValue] = useState(""); // Temporary state for edit mode
 
   const transportOptions = [
     "K.S.Shanmugasundaram Transports",
@@ -29,6 +33,11 @@ export const CompanyDetails = ({ company, details }) => {
     setCopied(false);
   }, [company]);
 
+  useEffect(() => {
+    // Update pipeDetails when the details prop changes
+    setPipeDetails(details || {});
+  }, [details]);
+
   const handleQuantityChange = (pipeType, spec, value) => {
     setQuantities((prevQuantities) => ({
       ...prevQuantities,
@@ -44,7 +53,7 @@ export const CompanyDetails = ({ company, details }) => {
 
   const calculateTotal = () => {
     let total = 0;
-    Object.entries(details).forEach(([pipeType, pipes]) => {
+    Object.entries(pipeDetails).forEach(([pipeType, pipes]) => {
       pipes.forEach((pipe) => {
         const key = `${pipeType}-${pipe.spec}`;
         const quantity = parseFloat(quantities[key]) || 0;
@@ -57,10 +66,10 @@ export const CompanyDetails = ({ company, details }) => {
   const getFormattedText = () => {
     let text = `${company}\n\n\n`;
 
-    Object.keys(details).forEach((pipeType) => {
-      if (details[pipeType] && details[pipeType].length > 0) {
+    Object.keys(pipeDetails).forEach((pipeType) => {
+      if (pipeDetails[pipeType] && pipeDetails[pipeType].length > 0) {
         text += `${pipeType}\n`;
-        details[pipeType].forEach((pipe) => {
+        pipeDetails[pipeType].forEach((pipe) => {
           const key = `${pipeType}-${pipe.spec}`;
           const quantity = quantities[key] || "";
           const nosText = pipe.spec.includes("173") && nosValues[key] ? ` (${nosValues[key]} Nos)` : "";
@@ -111,11 +120,41 @@ export const CompanyDetails = ({ company, details }) => {
     }
   };
 
+  const handleDropdownToggle = (index) => {
+    setDropdownOpen(dropdownOpen === index ? null : index);
+  };
+
+  const handleEdit = (pipeType, spec, currentSpec) => {
+    setEditMode(`${pipeType}-${spec}`);
+    setTempEditValue(currentSpec); // Initialize tempEditValue with the current spec
+    setDropdownOpen(null);
+  };
+
+  const handleCompleteEdit = (pipeType, index) => {
+    const updatedDetails = { ...pipeDetails };
+    updatedDetails[pipeType][index].spec = tempEditValue; // Update the spec with the temp value
+    setPipeDetails(updatedDetails);
+    setEditMode(null); // Exit edit mode
+  };
+
+  const handleDelete = (pipeType, spec) => {
+    const updatedDetails = { ...pipeDetails };
+    updatedDetails[pipeType] = updatedDetails[pipeType].filter((pipe) => pipe.spec !== spec);
+    setPipeDetails(updatedDetails);
+    setDropdownOpen(null);
+  };
+
+  const handleAddPipe = (pipeType) => {
+    const updatedDetails = { ...pipeDetails };
+    updatedDetails[pipeType] = [...(updatedDetails[pipeType] || []), { spec: "", quantity: "" }];
+    setPipeDetails(updatedDetails);
+  };
+
   // Flatten all input fields into a single array
   const flattenedInputs = [];
-  Object.keys(details).forEach((pipeType) => {
-    if (details[pipeType] && details[pipeType].length > 0) {
-      details[pipeType].forEach((pipe, index) => {
+  Object.keys(pipeDetails).forEach((pipeType) => {
+    if (pipeDetails[pipeType] && pipeDetails[pipeType].length > 0) {
+      pipeDetails[pipeType].forEach((pipe, index) => {
         flattenedInputs.push({ pipeType, pipe, index });
       });
     }
@@ -149,13 +188,13 @@ export const CompanyDetails = ({ company, details }) => {
       </div>
 
       <div className="pipe-sections">
-        {Object.keys(details).map((pipeType) => {
-          if (details[pipeType] && details[pipeType].length > 0) {
+        {Object.keys(pipeDetails).map((pipeType) => {
+          if (pipeDetails[pipeType] && pipeDetails[pipeType].length > 0) {
             return (
               <div key={pipeType} className="pipe-section">
                 <h3 className="pipe-title">{pipeType}</h3>
                 <div className="pipes">
-                  {details[pipeType].map((pipe, index) => {
+                  {pipeDetails[pipeType].map((pipe, index) => {
                     const key = `${pipeType}-${pipe.spec}`;
                     const enteredQuantity = parseFloat(quantities[key]) || 0;
                     const actualQuantity = parseFloat(pipe.quantity) || 0;
@@ -169,7 +208,28 @@ export const CompanyDetails = ({ company, details }) => {
 
                     return (
                       <div key={index} className="pipe-item">
-                        <span className="pipe-spec">{pipe.spec} - </span>
+                        <span className="pipe-spec">
+                          {editMode === key ? (
+                            <>
+                              <input
+                                type="text"
+                                value={tempEditValue}
+                                onChange={(e) => setTempEditValue(e.target.value)}
+                                className="edit-input"
+                                onKeyDown={(e) => handleKeyDown(e, flattenedIndex)} 
+                              />
+                              <button
+                                className="complete-button"
+                                onClick={() => handleCompleteEdit(pipeType, index)}
+                              >
+                                Complete
+                              </button>
+                            </>
+                          ) : (
+                            pipe.spec
+                          )}{" "}
+                          -{" "}
+                        </span>
                         <input
                           type="number"
                           value={quantities[key] || ""}
@@ -194,6 +254,17 @@ export const CompanyDetails = ({ company, details }) => {
                             />
                           </span>
                         )}
+                        <div className="dropdown">
+                          <button className="dropdown-toggle" onClick={() => handleDropdownToggle(flattenedIndex)}>
+                            ⋮
+                          </button>
+                          {dropdownOpen === flattenedIndex && (
+                            <div className="dropdown-menu">
+                              <button onClick={() => handleEdit(pipeType, pipe.spec, pipe.spec)}>Edit</button>
+                              <button onClick={() => handleDelete(pipeType, pipe.spec)}>Delete</button>
+                            </div>
+                          )}
+                        </div>
                         {quantities[key] && (
                           <span className="quantity-validation">
                             {isValid ? (
