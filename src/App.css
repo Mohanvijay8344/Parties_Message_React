@@ -69,6 +69,7 @@ body {
   outline: none;
   resize: vertical;
   background: #000000;
+  color: white;
 }
 
 .data-textarea:focus {
