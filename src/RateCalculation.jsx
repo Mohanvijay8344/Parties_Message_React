@@ -38,6 +38,12 @@ function RateCalculation() {
       if (nextField) {
         nextField.focus();
       }
+    } else if (e.key === "Escape") {
+      if (field === "rate") {
+        setRate("");
+      } else if (field === "freight") {
+        setFreight("");
+      }
     }
   };
 

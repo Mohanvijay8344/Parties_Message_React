@@ -24,6 +24,12 @@ function FreightCalculation() {
       if(nextField){
         nextField.focus()
       }
+    } else if (e.key === "Escape") {
+      if (field === "freight") {
+        setFreight("");
+      } else if (field === "quantity") {
+        setQuantity("");
+      }
     }
   }
 

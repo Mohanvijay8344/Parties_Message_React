@@ -299,6 +299,7 @@ export const CompanyDetails = ({ company, details = {} }) => {
               placeholder=""
               className="quantity-input"
               onChange={freightAmount}
+              value={freight}
             />
             /- Per M.T.
           </span>
