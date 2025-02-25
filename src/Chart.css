@@ -1,58 +1,191 @@
+/* Chart Container Styles */
 .chart-container {
-    gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  top: 25px;
+  position: relative;
+}
+
+/* Chart Table Section */
+.chart-table {
+  margin-bottom: 30px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.chart-table h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.chart-table h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: #4CAF50;
+  border-radius: 2px;
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 20px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+thead th {
+  background: #4CAF50;
+  color: white;
+  padding: 15px;
+  font-weight: 600;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+}
+
+tbody td {
+  padding: 15px;
+  border: 1px solid #eee;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+tbody tr:hover {
+  background-color: #f0f4f1;
+  transform: translateY(-1px);
+}
+
+table th, 
+table td {
+  text-align: center;
+  color: #333;
+}
+
+/* Result Cell Styles */
+.result-cell {
+  padding: 12px 15px;
+  font-size: 16px;
+  text-align: center;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  background: #f8f9fa;
+  color: #333;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.result-cell:hover {
+  border-color: #4CAF50;
+  background: #f0f4f1;
+}
+
+/* Table Header Styles */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 10px;
+}
+
+.table-header h2 {
+  margin: 0;
+}
+
+.table-header button {
+  padding: 10px 24px;
+  font-size: 16px;
+  color: white;
+  background: #4CAF50;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.table-header button:hover {
+  background: #45a049;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.table-header button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .chart-container {
     padding: 20px;
-    background-color: #f9f9f9;
-    font-family: Arial, sans-serif;
-  }
-  
-  .chart-table {
-    margin-bottom: 20px;
-  }
-  
-  .chart-table h2 {
-    margin-bottom: 10px;
-    color: #333;
-  }
-  
-  table {
-    width: 90%;
-    border-collapse: collapse;
-    margin-bottom: 10px;
-  }
-  
-  thead th {
-    background-color: #4CAF50;
-    color: rgb(0, 0, 0);
-    padding: 8px;
-    text-align: left;
-  }
-  
-  tbody td {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-  
-  tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-  
-  tbody tr:hover {
-    background-color: #ddd;
-  }
-  
-  table th, table td {
-    text-align: center;
-    color:  black;
   }
 
-.result-cell{
-  padding: 8px;
-  font-size: 18px;
-  text-align: center;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: #f9f9f9;
-  color: #333;
-  font-weight: bold;
+  .chart-table h2 {
+    font-size: 20px;
+  }
+
+  thead th {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  tbody td {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .result-cell {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+/* Button Styles */
+.chart-container button {
+  padding: 10px 20px;
+  font-size: 15px;
+  color: white;
+  background: #4CAF50;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container button:hover {
+  background: #45a049;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.chart-container button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

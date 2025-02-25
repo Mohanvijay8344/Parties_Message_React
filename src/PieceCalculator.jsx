@@ -43,9 +43,18 @@ const PieceCalculator = () => {
     return (findQuantity * totalPieces) / totalQuantity;
   };
 
+  const clearFields = () => {
+    setTotalPieces("");
+    setTotalQuantity("");
+    setFindQuantity("");
+  }
+
   return (
     <div className="piece-calculator">
-      <h1 className="title">Pieces Calculation</h1>
+      <div className="header-container">
+        <h1 className="title">Pieces Calculation</h1>
+        <button onClick={() => clearFields()}>Clear</button>
+      </div>
       <div className="input-container">
         <table className="results-table">
           <thead>

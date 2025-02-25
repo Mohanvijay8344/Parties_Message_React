@@ -192,7 +192,10 @@ export const CompanyDetails = ({ company, details = {} }) => {
           if (pipeDetails[pipeType] && pipeDetails[pipeType].length > 0) {
             return (
               <div key={pipeType} className="pipe-section">
-                <h3 className="pipe-title">{pipeType}</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', justifyContent: 'space-between' }}>
+                  <h3 className="pipe-title">{pipeType}</h3>
+                  <button className="complete-button" onClick={() => handleAddPipe(pipeType)}>Add Pipe</button>
+                </div>
                 <div className="pipes">
                   {pipeDetails[pipeType].map((pipe, index) => {
                     const key = `${pipeType}-${pipe.spec}`;
@@ -201,32 +204,30 @@ export const CompanyDetails = ({ company, details = {} }) => {
 
                     const isValid = validateQuantity(enteredQuantity, actualQuantity);
 
-                    // Find the index of the current input in the flattened array
                     const flattenedIndex = flattenedInputs.findIndex(
                       (input) => input.pipeType === pipeType && input.pipe.spec === pipe.spec
                     );
 
                     return (
                       <div key={index} className="pipe-item">
-                        <span className="pipe-spec">
+                        <span className="pipe-spec" onDoubleClick={() => handleEdit(pipeType, pipe.spec, pipe.spec)}>
                           {editMode === key ? (
-                            <>
-                              <input
-                                type="text"
-                                value={tempEditValue}
-                                onChange={(e) => setTempEditValue(e.target.value)}
-                                className="edit-input"
-                                onKeyDown={(e) => handleKeyDown(e, flattenedIndex)} 
-                              />
-                              <button
-                                className="complete-button"
-                                onClick={() => handleCompleteEdit(pipeType, index)}
-                              >
-                                Complete
-                              </button>
-                            </>
+                            <input
+                              type="text"
+                              value={tempEditValue}
+                              onChange={(e) => setTempEditValue(e.target.value)}
+                              className="edit-input"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleCompleteEdit(pipeType, index);
+                                } else {
+                                  handleKeyDown(e, flattenedIndex);
+                                }
+                              }}
+                              autoFocus
+                            />
                           ) : (
-                            pipe.spec
+                            <span style={{ cursor: 'pointer' }}>{pipe.spec || "New Pipe"}</span>
                           )}{" "}
                           -{" "}
                         </span>
@@ -238,7 +239,7 @@ export const CompanyDetails = ({ company, details = {} }) => {
                           }
                           placeholder="Qty"
                           className="quantity-input"
-                          ref={(el) => (inputRefs.current[flattenedIndex] = el)} // Assign ref based on flattened index
+                          ref={(el) => (inputRefs.current[flattenedIndex] = el)}
                           onKeyDown={(e) => handleKeyDown(e, flattenedIndex)}
                         />
                         {pipe.spec.includes("173") && (
@@ -249,7 +250,7 @@ export const CompanyDetails = ({ company, details = {} }) => {
                               className="quantity-input"
                               value={nosValues[key] || ""}
                               onChange={(e) => handleNosChange(pipeType, pipe.spec, e.target.value)}
-                              ref={(el) => (inputRefs.current[flattenedIndex + 1] = el)} // Assign ref for Nos input
+                              ref={(el) => (inputRefs.current[flattenedIndex + 1] = el)}
                               onKeyDown={(e) => handleKeyDown(e, flattenedIndex + 1)}
                             />
                           </span>

@@ -1,15 +1,15 @@
 import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import "./App.css";
-import { CompanyDetails } from "./CompanyDetails";
 import { processData } from "./processData";
-import CompanyList from "./CompanyList";
-import RateCalculation from "./RateCalculation";
-import FreightCalculation from "./FreightCalculation";
-import Chart from "./Chart";
 import Calculator from "./Calculator";
 import PieceCalculator from "./PieceCalculator";
+import Chart from "./Chart";
+import Navbar from "./components/Navbar";
+import Home from "./components/Home";
+import ContactList from "./ContactList";
 
-function App() {
+function MainContent() {
   const [inputData, setInputData] = useState("");
   const processedData = processData(inputData);
 
@@ -17,34 +17,42 @@ function App() {
     setInputData(e.target.value);
   };
 
-  return (
-    <div className="app-container">
-      <div className="app-content">
-        <div className="input-container">
-          <textarea
-            value={inputData}
-            onChange={handleInputChange}
-            className="data-textarea"
-            placeholder="Enter your pipe data here..."
-          />
-        </div>
-        <div className="output-container">
-          <CompanyList companies={processedData} />
-          <div className="calculator-container">
-        <div className="rate-freight-container">
-          <RateCalculation />
-          <FreightCalculation />
-
-        </div>
-        <Calculator />
-
-          </div>
-
-        </div>
-        <PieceCalculator />
-        <Chart />
+  const InputTextArea = () => {
+    return (
+      <div className="input-container">
+        <textarea
+          value={inputData}
+          onChange={handleInputChange}
+          placeholder="Enter your data here..."
+        />
       </div>
-    </div>
+    );
+  };
+
+  return (
+    <>
+      <div className="app-content">
+        <Routes>
+          <Route path="/" element={<Home inputData={processedData} InputTextArea={InputTextArea} />} />
+          <Route path="/calculator" element={<Calculator />} />
+          <Route path="/piece-calculator" element={<PieceCalculator />} />
+          <Route path="/charts" element={<Chart />} />
+          <Route path="/contacts" element={<ContactList />} />
+        </Routes>
+        
+      </div>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <div className="app-container">
+        <Navbar />
+        <MainContent />
+      </div>
+    </Router>
   );
 }
 

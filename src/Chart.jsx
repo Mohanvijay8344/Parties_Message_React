@@ -20,10 +20,39 @@ const Chart = () => {
     { thickness: 2.50, stripWidthCRFH: 539.5, stripWidthHR: 539.0, minWeight: 64.5, maxWeight: 64.9, minDiameter: 172.8, maxDiameter: 173.2 },
   ];
 
+  const [tableInputs, setTableInputs] = useState({
+    hr: Array(hrData.length).fill({ weight: "", pieces: "" }),
+    gi: Array(giData.length).fill({ weight: "", pieces: "" })
+  });
 
-  const renderTable = (data, title) => (
+  const handleInputChange = (tableType, rowIndex, field, value) => {
+    setTableInputs(prev => {
+      const newInputs = { ...prev };
+      const newArray = [...newInputs[tableType]];
+      newArray[rowIndex] = {
+        ...newArray[rowIndex],
+        [field]: value
+      };
+      return {
+        ...newInputs,
+        [tableType]: newArray
+      };
+    });
+  };
+
+  const clearFields = (tableType) => {
+    setTableInputs(prev => ({
+      ...prev,
+      [tableType]: Array(tableType === 'hr' ? hrData.length : giData.length).fill({ weight: "", pieces: "" })
+    }));
+  };
+
+  const renderTable = (data, title, tableType) => (
     <div className="chart-table">
-      <h2>{title}</h2>
+      <div className="table-header">
+        <h2>{title}</h2>
+        <button onClick={() => clearFields(tableType)}>Clear</button>
+      </div>
       <table>
         <thead>
           <tr>
@@ -39,9 +68,9 @@ const Chart = () => {
         </thead>
         <tbody>
           {data.map((row, index) => {
-            const [weight, setWeight] = useState();
-            const [pieces, setPieces] = useState();
-
+            const currentInputs = tableInputs[tableType][index];
+            const weight = parseFloat(currentInputs.weight) || 0;
+            const pieces = parseInt(currentInputs.pieces, 10) || 0;
             const result = weight && pieces ? weight / pieces : 0;
             const isInRange = result >= row.minWeight && result <= row.maxWeight;
             const showDifference = weight > 0 && pieces > 0 && !isInRange;
@@ -55,16 +84,16 @@ const Chart = () => {
                 <td>
                   <input
                     type="number"
-                    value={weight}
-                    onChange={(e) => setWeight(parseFloat(e.target.value))}
+                    value={currentInputs.weight}
+                    onChange={(e) => handleInputChange(tableType, index, "weight", e.target.value)}
                     className="table-input"
                   />
                 </td>
                 <td>
                   <input
                     type="number"
-                    value={pieces}
-                    onChange={(e) => setPieces(parseInt(e.target.value, 10))}
+                    value={currentInputs.pieces}
+                    onChange={(e) => handleInputChange(tableType, index, "pieces", e.target.value)}
                     className="table-input"
                   />
                 </td>
@@ -88,8 +117,8 @@ const Chart = () => {
 
   return (
     <div className="chart-container">
-      {renderTable(hrData, "HR Casing Weight Chart (Varnished Pipe)")}
-      {renderTable(giData, "GI Casing Weight Chart")}
+      {renderTable(hrData, "HR Casing Weight Chart (Varnished Pipe)", "hr")}
+      {renderTable(giData, "GI Casing Weight Chart", "gi")}
     </div>
   );
 };
