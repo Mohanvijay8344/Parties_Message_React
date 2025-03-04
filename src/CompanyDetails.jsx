@@ -10,6 +10,8 @@ export const CompanyDetails = ({ company, details = {} }) => {
   const [editMode, setEditMode] = useState(null); // State to manage edit mode
   const [pipeDetails, setPipeDetails] = useState(details); // State to manage the list of pipes
   const [tempEditValue, setTempEditValue] = useState(""); // Temporary state for edit mode
+  const [truckNumber, setTruckNumber] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
 
   const transportOptions = [
     "K.S.Shanmugasundaram Transports",
@@ -30,6 +32,8 @@ export const CompanyDetails = ({ company, details = {} }) => {
     setNosValues({});
     setFreight("");
     setSelectedTransport("");
+    setTruckNumber("");
+    setMobileNumber("");
     setCopied(false);
   }, [company]);
 
@@ -63,28 +67,65 @@ export const CompanyDetails = ({ company, details = {} }) => {
     return total.toFixed(3); // Apply toFixed only to the final total
   };
 
-  const getFormattedText = () => {
-    let text = `${company}\n\n\n`;
+  const formatTruckNumber = (number) => {
+    if (!number) return "";
+    // Remove all spaces and convert to uppercase
+    const cleanNumber = number.replace(/\s/g, '').toUpperCase();
+    
+    // Handle manual typing by accepting partial inputs
+    let formatted = '';
+    let i = 0;
+    
+    // State code (2 letters)
+    if (i < cleanNumber.length) {
+      formatted += cleanNumber.slice(i, Math.min(i + 2, cleanNumber.length));
+      i += 2;
+      if (i < cleanNumber.length && i >= 2) formatted += ' ';
+    }
+    
+    // District number (2 digits)
+    if (i < cleanNumber.length) {
+      formatted += cleanNumber.slice(i, Math.min(i + 2, cleanNumber.length));
+      i += 2;
+      if (i < cleanNumber.length && i >= 4) formatted += ' ';
+    }
+    
+    // Series letter (1 letter)
+    if (i < cleanNumber.length) {
+      formatted += cleanNumber.slice(i, Math.min(i + 1, cleanNumber.length));
+      i += 1;
+      if (i < cleanNumber.length && i >= 5) formatted += ' ';
+    }
+    
+    // Vehicle number (4 digits)
+    if (i < cleanNumber.length) {
+      formatted += cleanNumber.slice(i, Math.min(i + 4, cleanNumber.length));
+    }
+    
+    return formatted;
+  };
 
-    Object.keys(pipeDetails).forEach((pipeType) => {
-      if (pipeDetails[pipeType] && pipeDetails[pipeType].length > 0) {
-        text += `${pipeType}\n`;
-        pipeDetails[pipeType].forEach((pipe) => {
-          const key = `${pipeType}-${pipe.spec}`;
-          const quantity = quantities[key] || "";
-          const nosText = pipe.spec.includes("173") && nosValues[key] ? ` (${nosValues[key]} Nos)` : "";
+  const handleVehicleInput = (value) => {
+    // Split input by newline
+    const lines = value.split('\n');
+    
+    // Handle first line (truck number)
+    const truckLine = lines[0] || '';
+    // Allow only letters and numbers for truck number
+    const cleanTruck = truckLine.replace(/[^A-Za-z0-9]/g, '');
+    setTruckNumber(cleanTruck);
+    
+    // Handle second line (mobile number)
+    const mobileLine = lines[1] || '';
+    // Handle both with and without CT- prefix
+    const cleanMobile = mobileLine.replace(/^CT[-.]?\s*/, '').replace(/\D/g, '').slice(0, 10);
+    setMobileNumber(cleanMobile);
+  };
 
-          text += `${pipe.spec} - ${quantity}${nosText}\n`;
-        });
-        text += `\n`;
-      }
-    });
-
-    text += `Total      - ${calculateTotal()} M.T.\n\n`;
-    text += `Freight-Rs.${freight}/- Per M.T.\n\n`;
-    text += `${selectedTransport || " "}`;
-
-    return text;
+  const getFormattedInputValue = () => {
+    const formattedTruck = truckNumber ? formatTruckNumber(truckNumber) : '';
+    const formattedMobile = mobileNumber ? `CT-${mobileNumber}` : '';
+    return `${formattedTruck}\n${formattedMobile}`;
   };
 
   const handleCopy = async () => {
@@ -160,11 +201,37 @@ export const CompanyDetails = ({ company, details = {} }) => {
     }
   });
 
+  const getFormattedText = () => {
+    let text = `${company}\n`;
+    if (truckNumber) text += `${formatTruckNumber(truckNumber)}\n`;
+    if (mobileNumber) text += `CT- ${mobileNumber}\n\n`;
+
+    Object.keys(pipeDetails).forEach((pipeType) => {
+      if (pipeDetails[pipeType] && pipeDetails[pipeType].length > 0) {
+        text += `${pipeType}\n`;
+        pipeDetails[pipeType].forEach((pipe) => {
+          const key = `${pipeType}-${pipe.spec}`;
+          const quantity = quantities[key] || "";
+          const nosText = pipe.spec.includes("173") && nosValues[key] ? ` (${nosValues[key]} Nos)` : "";
+
+          text += `${pipe.spec} - ${quantity}${nosText}\n`;
+        });
+        text += `\n`;
+      }
+    });
+
+    text += `Total      - ${calculateTotal()} M.T.\n\n`;
+    text += `Freight-Rs.${freight}/- Per M.T.\n\n`;
+    text += `${selectedTransport || " "}\n\n`;
+
+    return text;
+  };
+
   return (
     <div className="company-card">
       <div className="company-header">
         <h2 className="company-title">{company}</h2>
-        <div className="summary-row">
+        <div className="summary-row" style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
           <select
             id="transport"
             value={selectedTransport}
@@ -177,6 +244,19 @@ export const CompanyDetails = ({ company, details = {} }) => {
               </option>
             ))}
           </select>
+          <textarea
+            placeholder="First line: Truck number (e.g., TN56A6031)&#10;Second line: Mobile number"
+            // value={getFormattedInputValue()}
+            onChange={(e) => handleVehicleInput(e.target.value)}
+            style={{ 
+              width: '250px', 
+              height: '60px', 
+              resize: 'none',
+              fontFamily: 'monospace',
+              padding: '8px'
+            }}
+            rows={2}
+          />
         </div>
         <button
           onClick={handleCopy}
