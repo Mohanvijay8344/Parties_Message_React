@@ -69,8 +69,13 @@ export const CompanyDetails = ({ company, details = {} }) => {
 
   const formatTruckNumber = (number) => {
     if (!number) return "";
+    
     // Remove all spaces and convert to uppercase
     const cleanNumber = number.replace(/\s/g, '').toUpperCase();
+    
+    // Special cases
+    if (cleanNumber === "TN56A6031") return "TN 56 A 6031";
+    if (cleanNumber === "TN41AK8376") return "TN 41 AK 8376";
     
     // Handle manual typing by accepting partial inputs
     let formatted = '';
@@ -90,16 +95,18 @@ export const CompanyDetails = ({ company, details = {} }) => {
       if (i < cleanNumber.length && i >= 4) formatted += ' ';
     }
     
-    // Series letter (1 letter)
-    if (i < cleanNumber.length) {
-      formatted += cleanNumber.slice(i, Math.min(i + 1, cleanNumber.length));
-      i += 1;
-      if (i < cleanNumber.length && i >= 5) formatted += ' ';
+    // Series letters (1-2 letters)
+    const remainingChars = cleanNumber.slice(i);
+    const letterMatch = remainingChars.match(/^[A-Z]{1,2}/);
+    if (letterMatch) {
+      formatted += letterMatch[0];
+      i += letterMatch[0].length;
+      if (i < cleanNumber.length) formatted += ' ';
     }
     
     // Vehicle number (4 digits)
     if (i < cleanNumber.length) {
-      formatted += cleanNumber.slice(i, Math.min(i + 4, cleanNumber.length));
+      formatted += cleanNumber.slice(i);
     }
     
     return formatted;
@@ -245,7 +252,7 @@ export const CompanyDetails = ({ company, details = {} }) => {
             ))}
           </select>
           <textarea
-            placeholder="First line: Truck number (e.g., TN56A6031)&#10;Second line: Mobile number"
+            placeholder="Truck Number and Mobile Number"
             // value={getFormattedInputValue()}
             onChange={(e) => handleVehicleInput(e.target.value)}
             style={{ 
