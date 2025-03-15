@@ -8,6 +8,7 @@ import Chart from "./Chart";
 import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import ContactList from "./ContactList";
+import PipeCounter from "./PipeCounter";
 
 function MainContent() {
   const [inputData, setInputData] = useState("");
@@ -38,8 +39,8 @@ function MainContent() {
           <Route path="/piece-calculator" element={<PieceCalculator />} />
           <Route path="/charts" element={<Chart />} />
           <Route path="/contacts" element={<ContactList />} />
+          <Route path="/pipe-counter" element={<PipeCounter />} />
         </Routes>
-        
       </div>
     </>
   );

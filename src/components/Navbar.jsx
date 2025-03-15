@@ -29,6 +29,8 @@ const Navbar = () => {
         <li><Link to="/charts" onClick={toggleMenu}>Charts</Link></li>
         <li><Link to="/contacts" onClick={toggleMenu}>Contacts</Link></li>
         <li><Link to="/calculator" onClick={toggleMenu}>Calculator</Link></li>
+        <li><Link to="/pipe-counter" onClick={toggleMenu}>Pipe Counter</Link></li>
+       
       </ul>
     </nav>
   );
