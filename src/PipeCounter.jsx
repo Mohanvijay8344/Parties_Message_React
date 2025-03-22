@@ -12,7 +12,6 @@ const MARKER_TYPES = {
 
 function PipeCounter() {
   const [image, setImage] = useState(null);
-  const [isMarking, setIsMarking] = useState(true);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragStart, setDragStart] = useState(null);
@@ -163,15 +162,116 @@ function PipeCounter() {
     }
   };
 
-  // Handle click for adding markers
-  const handleClick = useCallback((e) => {
-    if (!isDragging && isMarking && canvasRef.current && containerRef.current && imageRef.current) {
+  // Handle wheel event for zooming
+  const handleWheel = useCallback((e) => {
+    e.preventDefault();
+    if (!imageRef.current) return;
+
+    const rect = canvasRef.current.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    // Calculate zoom factor based on wheel delta
+    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+    const newScale = scale * zoomFactor;
+
+    // Limit zoom scale
+    if (newScale < 0.1 || newScale > 10) return;
+
+    // Calculate new position to zoom towards mouse cursor
+    const newPosition = {
+      x: mouseX - (mouseX - position.x) * zoomFactor,
+      y: mouseY - (mouseY - position.y) * zoomFactor
+    };
+
+    setScale(newScale);
+    setPosition(newPosition);
+  }, [scale, position]);
+
+  // Add wheel event listener
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.addEventListener('wheel', handleWheel);
+      return () => canvas.removeEventListener('wheel', handleWheel);
+    }
+  }, [handleWheel]);
+
+  // Handle mouse down for panning
+  const handleMouseDown = useCallback((e) => {
+    if (e.button === 0) {  // Left mouse button for panning
       const rect = canvasRef.current.getBoundingClientRect();
-      const container = containerRef.current;
-      const img = imageRef.current;
-      
+      setDragStart({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      });
+      setIsDragging(true);
+    }
+  }, []);
+
+  // Handle mouse move for panning
+  const handleMouseMove = useCallback((e) => {
+    if (isDragging && canvasRef.current) {
+      const rect = canvasRef.current.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
+      
+      const deltaX = mouseX - dragStart.x;
+      const deltaY = mouseY - dragStart.y;
+      
+      setPosition(prev => ({
+        x: prev.x + deltaX,
+        y: prev.y + deltaY
+      }));
+      
+      setDragStart({ x: mouseX, y: mouseY });
+    }
+  }, [isDragging, dragStart]);
+
+  // Handle mouse up for panning
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  // Check if click is near a marker
+  const findNearbyMarker = useCallback((x, y, markers, threshold = 20) => {
+    const container = containerRef.current;
+    const img = imageRef.current;
+    const scaleX = container.clientWidth / img.naturalWidth;
+    const scaleY = container.clientHeight / img.naturalHeight;
+    const baseScale = Math.min(scaleX, scaleY);
+
+    return markers.findIndex(marker => {
+      const markerScreenX = position.x + marker.x * baseScale * scale;
+      const markerScreenY = position.y + marker.y * baseScale * scale;
+      
+      const distance = Math.sqrt(
+        Math.pow(x - markerScreenX, 2) + 
+        Math.pow(y - markerScreenY, 2)
+      );
+      
+      return distance <= threshold;
+    });
+  }, [position, scale]);
+
+  // Handle click for adding or removing markers
+  const handleClick = useCallback((e) => {
+    if (!isDragging && canvasRef.current && containerRef.current && imageRef.current) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      // Check if clicked on existing marker
+      const nearbyMarkerIndex = findNearbyMarker(mouseX, mouseY, markers);
+      if (nearbyMarkerIndex !== -1) {
+        // Remove the marker if clicked
+        setMarkers(prev => prev.filter((_, index) => index !== nearbyMarkerIndex));
+        return;
+      }
+      
+      // If not clicking on existing marker, add new marker
+      const container = containerRef.current;
+      const img = imageRef.current;
       
       // Convert click coordinates to image coordinates
       const scaleX = container.clientWidth / img.naturalWidth;
@@ -191,76 +291,7 @@ function PipeCounter() {
         setMarkers(prev => [...prev, newMarker]);
       }
     }
-  }, [isDragging, isMarking, position, scale]);
-
-  // Handle mouse down for panning
-  const handleMouseDown = useCallback((e) => {
-    if (e.button === 0 && (!isMarking || e.ctrlKey)) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      setDragStart({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
-      });
-      setIsDragging(true);
-      canvasRef.current.style.cursor = 'grabbing';
-    }
-  }, [isMarking]);
-
-  const handleMouseMove = useCallback((e) => {
-    if (isDragging && canvasRef.current) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-      
-      const deltaX = mouseX - dragStart.x;
-      const deltaY = mouseY - dragStart.y;
-      
-      setPosition(prev => ({
-        x: prev.x + deltaX,
-        y: prev.y + deltaY
-      }));
-      
-      setDragStart({ x: mouseX, y: mouseY });
-    }
-  }, [isDragging, dragStart]);
-
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-    canvasRef.current.style.cursor = isMarking ? 'crosshair' : 'grab';
-  }, [isMarking]);
-
-  const handleWheel = useCallback((e) => {
-    e.preventDefault();
-    
-    if (!canvasRef.current || !containerRef.current || !imageRef.current) return;
-    
-    const rect = canvasRef.current.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    
-    // Convert mouse position to image coordinates
-    const container = containerRef.current;
-    const img = imageRef.current;
-    const scaleX = container.clientWidth / img.naturalWidth;
-    const scaleY = container.clientHeight / img.naturalHeight;
-    const baseScale = Math.min(scaleX, scaleY);
-    
-    const imageX = (mouseX - position.x) / (baseScale * scale);
-    const imageY = (mouseY - position.y) / (baseScale * scale);
-    
-    // Calculate new scale
-    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
-    const newScale = Math.min(Math.max(scale * zoomFactor, 0.1), 10);
-    
-    // Calculate new position to zoom towards mouse
-    const newPosition = {
-      x: mouseX - imageX * baseScale * newScale,
-      y: mouseY - imageY * baseScale * newScale
-    };
-    
-    setScale(newScale);
-    setPosition(newPosition);
-  }, [scale, position]);
+  }, [isDragging, position, scale, markers, findNearbyMarker]);
 
   const handleDownload = () => {
     if (!truckNumber) {
@@ -269,55 +300,44 @@ function PipeCounter() {
     }
 
     const canvas = document.createElement('canvas');
+    const img = imageRef.current;
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
     const ctx = canvas.getContext('2d');
-    
-    // Set canvas size to match image
-    canvas.width = imageRef.current.naturalWidth;
-    canvas.height = imageRef.current.naturalHeight + 60; // Extra space for header
-    
-    // Draw white background and header
-    ctx.fillStyle = '#2c3e50';
-    ctx.fillRect(0, 0, canvas.width, 60);
-    
-    // Draw header text
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 24px Arial';
-    ctx.textAlign = 'left';
-    ctx.fillText(`Truck Number: ${truckNumber}`, 20, 35);
-    ctx.textAlign = 'right';
-    ctx.fillText(`Total Pipes: ${markers.length}`, canvas.width - 20, 35);
-    
-    // Draw image
-    ctx.drawImage(imageRef.current, 0, 60);
-    
-    // Draw markers with numbers
-    const baseScale = 1;
+
+    // Draw the image
+    ctx.drawImage(img, 0, 0);
+
+    // Set text properties
+    const fontSize = Math.min(40, img.naturalWidth / 20);
+    ctx.font = `bold ${fontSize}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.lineWidth = 2;
+
+    // Draw markers
     markers.forEach((marker, index) => {
-      const markerX = marker.x;
-      const markerY = marker.y + 60; // Offset for header
-      const markerSize = 15;
-      
-      // Draw marker circle
-      ctx.beginPath();
-      ctx.arc(markerX, markerY, markerSize, 0, 2 * Math.PI);
-      ctx.fillStyle = '#2ecc71';
-      ctx.fill();
+      const markerSize = Math.min(40, img.naturalWidth / 30);
+      const x = marker.x;
+      const y = marker.y;
+
+      // Draw text with white border
       ctx.strokeStyle = 'white';
-      ctx.lineWidth = 2;
-      ctx.stroke();
+      ctx.strokeText(index + 1, x, y);
       
-      // Draw marker number
-      ctx.font = 'bold 16px Arial';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = 'white';
-      ctx.strokeStyle = 'black';
-      ctx.lineWidth = 3;
-      ctx.strokeText(index + 1, markerX, markerY);
-      ctx.fillText(index + 1, markerX, markerY);
+      // Draw text in black
+      ctx.fillStyle = 'black';
+      ctx.fillText(index + 1, x, y);
     });
-    
-    // Download the image
+
+    // Add truck number and total count at the top
+    ctx.font = `bold ${fontSize * 1.2}px Arial`;
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(0, 0, img.naturalWidth, fontSize * 2);
+    ctx.fillStyle = 'white';
+    ctx.fillText(`Truck Number: ${truckNumber} Total Pipes: ${markers.length}`, img.naturalWidth / 2, fontSize * 1.2);
+
+    // Create download link
     const link = document.createElement('a');
     link.download = `truck_${truckNumber}_pipes_${markers.length}.png`;
     link.href = canvas.toDataURL('image/png');
@@ -344,18 +364,6 @@ function PipeCounter() {
           </button>
         ) : (
           <>
-            <div className="left-tools">
-              <button 
-                className={`tool-button ${isMarking ? 'active' : ''}`}
-                onClick={() => setIsMarking(!isMarking)}
-              >
-                {isMarking ? '✏️ Mark' : '🤚 Pan'}
-              </button>
-              <button onClick={() => setMarkers([])} disabled={markers.length === 0}>
-                🗑️ Clear
-              </button>
-            </div>
-
             <div className="center-tools">
               <div className="zoom-controls">
                 <button onClick={() => setScale(s => Math.min(s + 0.1, 10))} title="Zoom In">
@@ -424,7 +432,6 @@ function PipeCounter() {
         >
           <canvas
             ref={canvasRef}
-            style={{ cursor: isMarking ? 'crosshair' : 'grab' }}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}

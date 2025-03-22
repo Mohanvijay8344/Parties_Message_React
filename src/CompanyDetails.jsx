@@ -130,9 +130,10 @@ export const CompanyDetails = ({ company, details = {} }) => {
   };
 
   const getFormattedInputValue = () => {
-    const formattedTruck = truckNumber ? formatTruckNumber(truckNumber) : '';
-    const formattedMobile = mobileNumber ? `CT-${mobileNumber}` : '';
-    return `${formattedTruck}\n${formattedMobile}`;
+    let value = "";
+    if (truckNumber) value += formatTruckNumber(truckNumber);
+    if (mobileNumber) value += mobileNumber ? `\nCT- ${mobileNumber}` : "";
+    return value;
   };
 
   const handleCopy = async () => {
@@ -253,7 +254,7 @@ export const CompanyDetails = ({ company, details = {} }) => {
           </select>
           <textarea
             placeholder="Truck Number and Mobile Number"
-            // value={getFormattedInputValue()}
+            value={getFormattedInputValue()}
             onChange={(e) => handleVehicleInput(e.target.value)}
             style={{ 
               width: '250px', 
@@ -356,7 +357,7 @@ export const CompanyDetails = ({ company, details = {} }) => {
                         {quantities[key] && (
                           <span className="quantity-validation">
                             {isValid ? (
-                              <span className="valid-quantity">✅✅</span>
+                              <span className="valid-quantity">✅✅ Qty: {quantities[key]} M.T.</span>
                             ) : (
                               <span className="invalid-quantity">
                                 ❌❌ Actual: {actualQuantity} M.T

@@ -50,8 +50,31 @@
   align-items: center;
   gap: 6px;
   font-size: 14px;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.toolbar button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.toolbar button:hover::after {
+  transform: translate(-50%, -50%) scale(2);
+}
+
+.toolbar button:active::after {
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .toolbar button:hover {
@@ -178,18 +201,19 @@ canvas {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(var(--scale-factor, 1));
-  background: var(--marker-color, #666);
-  color: white;
-  width: 16px;
-  height: 16px;
-  font-size: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   pointer-events: none;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 2px solid var(--marker-color, #666);
 }
 
 .marker-tooltip {
@@ -624,13 +648,156 @@ canvas {
 }
 
 .modal-buttons button:active {
-  transform: translateY(0);
+  transform: translateY(1px);
 }
 
 .modal-buttons button:disabled {
   background: #ccc;
   cursor: not-allowed;
   transform: none;
+}
+
+.download-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #34495e;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.download-section input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: white;
+  padding: 6px 12px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+  width: 120px;
+}
+
+.download-section input:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.download-section input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.download-button {
+  background: #3498db !important;
+  padding: 8px 20px !important;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.download-button:hover {
+  background: #2980b9 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.download-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.download-button:disabled {
+  background: #95a5a6 !important;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.download-button .icon {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+@keyframes downloadSuccess {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.download-success {
+  animation: downloadSuccess 0.5s ease;
+}
+
+.truck-number-modal {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  max-width: 400px;
+  width: 90%;
+}
+
+.truck-number-modal h3 {
+  margin: 0 0 16px 0;
+  color: #2c3e50;
+  font-size: 20px;
+}
+
+.truck-number-modal input {
+  width: 100%;
+  padding: 10px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.truck-number-modal input:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.truck-number-modal .modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.truck-number-modal .modal-buttons button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.truck-number-modal .modal-buttons button.confirm {
+  background: #3498db;
+  color: white;
+}
+
+.truck-number-modal .modal-buttons button.confirm:hover {
+  background: #2980b9;
+  transform: translateY(-1px);
+}
+
+.truck-number-modal .modal-buttons button.cancel {
+  background: #e0e0e0;
+  color: #666;
+}
+
+.truck-number-modal .modal-buttons button.cancel:hover {
+  background: #d5d5d5;
+  transform: translateY(-1px);
+}
+
+.truck-number-modal .modal-buttons button:active {
+  transform: translateY(1px);
 }
 
 /* Custom scrollbar for the count list */
